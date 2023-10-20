@@ -13,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         NavigationBarItem(
                             selected = currentDestination?.hierarchy?.any { it.route == item.destination.value } == true,
                             onClick = { navController.navigate(item.destination) },
-                            icon = { Icon(painterResource(id = R.drawable.ic_post), contentDescription = null) },
+                            icon = { Icon(item.painter, contentDescription = null) },
                             label = { Text(text = item.label) }
                         )
                     }
