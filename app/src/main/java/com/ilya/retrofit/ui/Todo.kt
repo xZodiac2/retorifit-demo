@@ -13,7 +13,6 @@ import com.ilya.data.retrofit.Todo
 
 @Composable
 fun Todo(todoData: Todo) {
-    
     CardLayout {
         Column(
             verticalArrangement = Arrangement.SpaceEvenly,
