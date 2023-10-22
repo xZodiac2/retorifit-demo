@@ -7,6 +7,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ilya.retrofit.TodosViewModel
@@ -20,8 +21,8 @@ fun TodosScreen(todosViewModel: TodosViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        state.value?.forEach {
-            item { Todo(todoData = it) }
+        state.value?.let { todoList ->
+            items(todoList) { Todo(it) }
         } ?: item { CircularProgressIndicator() }
     }
     

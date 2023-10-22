@@ -3,6 +3,7 @@ package com.ilya.data
 import com.ilya.data.retrofit.JsonPlaceholderApi
 import com.ilya.data.retrofit.Post
 import com.ilya.data.retrofit.Todo
+import retrofit2.await
 import javax.inject.Inject
 
 class JsonPlaceholderRepository @Inject internal constructor(
