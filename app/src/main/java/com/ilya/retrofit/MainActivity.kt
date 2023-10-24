@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     bottomBarItems.forEach { item ->
                         NavigationBarItem(
                             selected = currentDestination?.hierarchy?.any { it.route == item.destination.value } == true,
-                            onClick = { navController.navigate(item.destination) },
+                            onClick = { navController.navigate(item.destination) { launchSingleTop = true } },
                             icon = { Icon(item.painter, contentDescription = null) },
                             label = { Text(text = item.label) }
                         )
