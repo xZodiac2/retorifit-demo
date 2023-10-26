@@ -19,6 +19,7 @@ class TodosViewModel @Inject constructor(
     val todosScreenState = _todosScreenState.asStateFlow()
     
     suspend fun getAllTodos() = withContext(Dispatchers.IO) {
+        _todosScreenState.value = TodosScreenState.Waiting
         try {
             val todos = todosRepository.getAllTodos()
             _todosScreenState.value = TodosScreenState.Success(todos)

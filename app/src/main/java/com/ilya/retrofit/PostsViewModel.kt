@@ -19,6 +19,7 @@ class PostsViewModel @Inject constructor(
     val postsScreenState = _postsScreenState.asStateFlow()
     
     suspend fun getAllPosts() = withContext(Dispatchers.IO) {
+        _postsScreenState.value = PostsScreenState.Waiting
         try {
             val posts = postsRepository.getAllPosts()
             _postsScreenState.value = PostsScreenState.Success(posts)
