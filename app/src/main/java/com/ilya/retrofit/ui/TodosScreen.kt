@@ -1,6 +1,7 @@
 package com.ilya.retrofit.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.ilya.data.retrofit.Todo
 import com.ilya.retrofit.TodosViewModel
 import com.ilya.retrofit.ui.state.TodosScreenState
 import kotlinx.coroutines.launch
@@ -22,31 +24,25 @@ fun TodosScreen(todosViewModel: TodosViewModel) {
     val state = todosViewModel.todosScreenState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        when (state.value) {
-            is TodosScreenState.Error -> item {
-                TodosScreenOnError(onRetryClick = {
-                    coroutineScope.launch { todosViewModel.getAllTodos() }
-                })
-            }
-            
-            is TodosScreenState.Waiting -> {
+    when (state.value) {
+        is TodosScreenState.Error -> {
+            ErrorState(onRetryClick = {
                 coroutineScope.launch { todosViewModel.getAllTodos() }
-                item { CircularProgressIndicator() }
-            }
-            
-            is TodosScreenState.Success -> items((state.value as TodosScreenState.Success).todos) { Todo(it) }
+            })
         }
+        
+        is TodosScreenState.Loading -> {
+            LoadingState(onStart = {
+                coroutineScope.launch { todosViewModel.getAllTodos() }
+            })
+        }
+        
+        is TodosScreenState.Success -> SuccessState((state.value as TodosScreenState.Success).todos)
     }
 }
 
-
 @Composable
-fun TodosScreenOnError(onRetryClick: () -> Unit) {
+private fun ErrorState(onRetryClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -56,5 +52,27 @@ fun TodosScreenOnError(onRetryClick: () -> Unit) {
         Button(onClick = onRetryClick) {
             Text(text = "Try again")
         }
+    }
+}
+
+@Composable
+private fun LoadingState(onStart: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+        onStart()
+    }
+}
+
+@Composable
+private fun SuccessState(todos: List<Todo>) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        items(todos) { Todo(todoData = it) }
     }
 }

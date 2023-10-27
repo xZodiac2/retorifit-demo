@@ -15,11 +15,11 @@ class PostsViewModel @Inject constructor(
     private val postsRepository: JsonPlaceholderRepository,
 ) : ViewModel() {
     
-    private val _postsScreenState = MutableStateFlow<PostsScreenState>(PostsScreenState.Waiting)
+    private val _postsScreenState = MutableStateFlow<PostsScreenState>(PostsScreenState.Loading)
     val postsScreenState = _postsScreenState.asStateFlow()
     
     suspend fun getAllPosts() = withContext(Dispatchers.IO) {
-        _postsScreenState.value = PostsScreenState.Waiting
+        _postsScreenState.value = PostsScreenState.Loading
         try {
             val posts = postsRepository.getAllPosts()
             _postsScreenState.value = PostsScreenState.Success(posts)

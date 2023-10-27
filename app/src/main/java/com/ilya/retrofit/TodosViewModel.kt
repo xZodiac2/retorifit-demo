@@ -15,11 +15,11 @@ class TodosViewModel @Inject constructor(
     private val todosRepository: JsonPlaceholderRepository,
 ) : ViewModel() {
     
-    private val _todosScreenState = MutableStateFlow<TodosScreenState>(TodosScreenState.Waiting)
+    private val _todosScreenState = MutableStateFlow<TodosScreenState>(TodosScreenState.Loading)
     val todosScreenState = _todosScreenState.asStateFlow()
     
     suspend fun getAllTodos() = withContext(Dispatchers.IO) {
-        _todosScreenState.value = TodosScreenState.Waiting
+        _todosScreenState.value = TodosScreenState.Loading
         try {
             val todos = todosRepository.getAllTodos()
             _todosScreenState.value = TodosScreenState.Success(todos)

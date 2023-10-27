@@ -1,6 +1,7 @@
 package com.ilya.retrofit.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.ilya.data.retrofit.Post
 import com.ilya.retrofit.PostsViewModel
 import com.ilya.retrofit.ui.state.PostsScreenState
 import kotlinx.coroutines.launch
@@ -22,30 +24,25 @@ fun PostScreen(postsViewModel: PostsViewModel) {
     val state = postsViewModel.postsScreenState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        when (state.value) {
-            is PostsScreenState.Error -> item {
-                PostScreenOnError(onRetryClick = {
-                    coroutineScope.launch { postsViewModel.getAllPosts() }
-                })
-            }
-            
-            is PostsScreenState.Waiting -> {
+    when (state.value) {
+        is PostsScreenState.Error -> {
+            ErrorState(onRetryClick = {
                 coroutineScope.launch { postsViewModel.getAllPosts() }
-                item { CircularProgressIndicator() }
-            }
-            
-            is PostsScreenState.Success -> items((state.value as PostsScreenState.Success).postsList) { Post(it) }
+            })
         }
+        
+        is PostsScreenState.Loading -> {
+            LoadingState(onStart = {
+                coroutineScope.launch { postsViewModel.getAllPosts() }
+            })
+        }
+        
+        is PostsScreenState.Success -> SuccessState((state.value as PostsScreenState.Success).postsList)
     }
 }
 
 @Composable
-fun PostScreenOnError(onRetryClick: () -> Unit) {
+private fun ErrorState(onRetryClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -55,5 +52,27 @@ fun PostScreenOnError(onRetryClick: () -> Unit) {
         Button(onClick = onRetryClick) {
             Text(text = "Try again")
         }
+    }
+}
+
+@Composable
+private fun LoadingState(onStart: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+        onStart()
+    }
+}
+
+@Composable
+private fun SuccessState(posts: List<Post>) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        items(posts) { Post(it) }
     }
 }
